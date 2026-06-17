@@ -72,39 +72,6 @@ class WPU_Admin {
     }
 
     /**
-     * Register the JavaScript for the admin area.
-     *
-     * @since    1.0.0
-     */
-    public function enqueue_scripts() {
-        // Only enqueue on plugin admin pages
-        $screen = get_current_screen();
-        if (!$screen || strpos($screen->id, 'wedding-photo-uploader') === false) {
-            return;
-        }
-
-        wp_enqueue_script(
-            $this->plugin_name,
-            WPU_PLUGIN_URL . 'assets/js/admin.js',
-            array('jquery'),
-            $this->version,
-            false
-        );
-
-        wp_localize_script($this->plugin_name, 'wpuAdmin', array(
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpu_admin_nonce'),
-            'i18n' => array(
-                'confirmDelete' => __('Are you sure you want to delete this item?', 'wedding-photo-uploader'),
-                'confirmApprove' => __('Are you sure you want to approve this item?', 'wedding-photo-uploader'),
-                'confirmReject' => __('Are you sure you want to reject this item?', 'wedding-photo-uploader'),
-                'error' => __('An error occurred. Please try again.', 'wedding-photo-uploader'),
-                'success' => __('Operation completed successfully.', 'wedding-photo-uploader')
-            )
-        ));
-    }
-
-    /**
      * Add menu items for the admin area.
      *
      * @since    1.0.0
@@ -241,16 +208,8 @@ class WPU_Admin {
             wp_die(__('You do not have sufficient permissions to access this page.', 'wedding-photo-uploader'));
         }
 
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'wedding_photos';
-        
-        // Get all photos ordered by upload date
-        $photos = $wpdb->get_results(
-            "SELECT wp.*, p.guid as image_url 
-            FROM $table_name wp 
-            LEFT JOIN {$wpdb->posts} p ON wp.image_id = p.ID 
-            ORDER BY wp.date_uploaded DESC"
-        );
+        // The moderation table is built in admin-interface.php, which runs its own
+        // status-filtered queries.
 
         include WPU_PLUGIN_DIR . 'includes/admin-interface.php';
     }

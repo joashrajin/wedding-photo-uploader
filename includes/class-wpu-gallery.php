@@ -231,8 +231,6 @@ class WPU_Gallery {
                         galleryContainer.find(".gallery-item[data-type=\"" + filterType + "\"]").show();
                     }
                 });
-                
-                console.log("Wedding gallery with video enlargement initialized");
             });
         ');
     }
@@ -274,9 +272,8 @@ class WPU_Gallery {
         $order_by = $this->get_order_by_clause($attributes['sortBy']);
         
         // Build complete query
-        $query = "SELECT wp.id, wp.image_id, wp.uploader_name, wp.date_uploaded, wp.file_type, p.guid as image_url 
+        $query = "SELECT wp.id, wp.image_id, wp.uploader_name, wp.date_uploaded, wp.file_type 
                  FROM $table_name wp 
-                 LEFT JOIN {$wpdb->posts} p ON wp.image_id = p.ID 
                  WHERE " . implode(' AND ', $where_conditions) . " 
                  ORDER BY " . $order_by;
         
@@ -329,13 +326,13 @@ class WPU_Gallery {
                              data-video-type="<?php echo esc_attr($this->get_browser_compatible_mime_type(get_post_mime_type($item->image_id))); ?>"
                              data-caption="<?php echo $caption; ?>">
                             <div class="video-thumbnail" style="width: 100%; height: 100%; background: #000; position: relative; cursor: pointer;">
-                                <video preload="metadata" style="width: 100%; height: 100%; object-fit: cover;" muted controls="false" onclick="return false;">
+                                <video preload="metadata" style="width: 100%; height: 100%; object-fit: cover;" muted onclick="return false;">
                                     <source src="<?php echo esc_url($video_url); ?>" type="<?php echo esc_attr($this->get_browser_compatible_mime_type(get_post_mime_type($item->image_id))); ?>">
                                     <?php esc_html_e('Your browser does not support the video tag.', 'wedding-photo-uploader'); ?>
                                 </video>
                                     <div class="video-overlay">
                                         <div class="play-button">
-                                            <i class="dashicons dashicons-controls-play"></i>
+                                            <i class="dashicons dashicons-controls-play" aria-hidden="true"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -343,7 +340,7 @@ class WPU_Gallery {
                             <?php if ($attributes['showUploaderInfo']): ?>
                                 <div class="item-meta">
                                     <span class="uploader-name"><?php echo esc_html($item->uploader_name); ?></span>
-                                    <span class="upload-date"><?php echo esc_html(date('M j, Y', strtotime($item->date_uploaded))); ?></span>
+                                    <span class="upload-date"><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($item->date_uploaded))); ?></span>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -381,7 +378,7 @@ class WPU_Gallery {
                             <?php if ($attributes['showUploaderInfo']): ?>
                                 <div class="item-meta">
                                     <span class="uploader-name"><?php echo esc_html($item->uploader_name); ?></span>
-                                    <span class="upload-date"><?php echo esc_html(date('M j, Y', strtotime($item->date_uploaded))); ?></span>
+                                    <span class="upload-date"><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($item->date_uploaded))); ?></span>
                                 </div>
                             <?php endif; ?>
                         </div>

@@ -4,7 +4,7 @@ Tags: wedding, photo, upload, gallery, video
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,16 @@ No — it provides two editor blocks (Uploader and Gallery).
 
 == Changelog ==
 
+= 1.1.8 =
+* Maintenance & housekeeping release.
+* Removed dead/unused code (legacy upload form, stale admin script, unused helpers).
+* Fixed block padding/border-radius rendering (a double CSS-unit bug).
+* Dropped an unused database JOIN from the gallery and admin queries.
+* Upload dates now respect the site's timezone and locale.
+* Accessibility: upload status is announced to screen readers, gallery video
+  controls/play cue behave correctly, attribution shows on touch devices, and a
+  no-JavaScript notice was added to the upload form.
+
 = 1.1.7 =
 * Security & WordPress.org compliance release.
 * Added per-IP rate limiting, a per-request file cap, and per-uploader quota
@@ -95,6 +105,9 @@ No — it provides two editor blocks (Uploader and Gallery).
   gallery display, email notifications, and upload progress tracking.
 
 == Upgrade Notice ==
+
+= 1.1.8 =
+Maintenance release: cleanup, a rendering fix, and accessibility improvements. Safe drop-in update.
 
 = 1.1.7 =
 Security and compliance update. Recommended for all users. After updating,

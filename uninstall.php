@@ -27,10 +27,6 @@ if (is_array($active_plugins)) {
 delete_option('wpu_version');
 delete_option('wpu_settings');
 
-// Remove any transients or cached data
-delete_transient('wpu_photo_counts');
-delete_transient('wpu_gallery_cache');
-
 // Remove plugin tables
 $table_name = $wpdb->prefix . 'wedding_photos';
 $wpdb->query("DROP TABLE IF EXISTS $table_name");

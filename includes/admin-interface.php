@@ -228,27 +228,24 @@ if (isset($_POST['bulk_action']) && isset($_POST['bulk_nonce'])) {
 
     // Get photos and videos by status using prepared statements
     $pending_photos = $wpdb->get_results($wpdb->prepare(
-        "SELECT wp.*, p.guid as image_url 
+        "SELECT wp.* 
         FROM {$wpdb->prefix}wedding_photos wp 
-        LEFT JOIN {$wpdb->posts} p ON wp.image_id = p.ID 
         WHERE wp.status = %s 
         ORDER BY wp.date_uploaded DESC",
         'pending'
     ));
 
     $approved_photos = $wpdb->get_results($wpdb->prepare(
-        "SELECT wp.*, p.guid as image_url 
+        "SELECT wp.* 
         FROM {$wpdb->prefix}wedding_photos wp 
-        LEFT JOIN {$wpdb->posts} p ON wp.image_id = p.ID 
         WHERE wp.status = %s 
         ORDER BY wp.date_uploaded DESC",
         'approved'
     ));
 
     $rejected_photos = $wpdb->get_results($wpdb->prepare(
-        "SELECT wp.*, p.guid as image_url 
+        "SELECT wp.* 
         FROM {$wpdb->prefix}wedding_photos wp 
-        LEFT JOIN {$wpdb->posts} p ON wp.image_id = p.ID 
         WHERE wp.status = %s 
         ORDER BY wp.date_uploaded DESC",
         'rejected'

@@ -57,17 +57,18 @@ class WPU_Uploader {
             $wrapper_styles[] = 'color: ' . esc_attr($attributes['textColor']);
         }
         if (!empty($attributes['fontSize'])) {
-            $wrapper_styles[] = 'font-size: ' . esc_attr($attributes['fontSize']) . 'px';
+            $wrapper_styles[] = 'font-size: ' . esc_attr($this->add_css_unit($attributes['fontSize']));
         }
         if (!empty($attributes['padding'])) {
             $padding = $attributes['padding'];
-            $wrapper_styles[] = 'padding: ' . esc_attr($padding['top']) . 'px ' . 
-                              esc_attr($padding['right']) . 'px ' . 
-                              esc_attr($padding['bottom']) . 'px ' . 
-                              esc_attr($padding['left']) . 'px';
+            $wrapper_styles[] = 'padding: ' .
+                esc_attr($this->add_css_unit($padding['top'])) . ' ' .
+                esc_attr($this->add_css_unit($padding['right'])) . ' ' .
+                esc_attr($this->add_css_unit($padding['bottom'])) . ' ' .
+                esc_attr($this->add_css_unit($padding['left']));
         }
         if (!empty($attributes['borderRadius'])) {
-            $wrapper_styles[] = 'border-radius: ' . esc_attr($attributes['borderRadius']) . 'px';
+            $wrapper_styles[] = 'border-radius: ' . esc_attr($this->add_css_unit($attributes['borderRadius']));
         }
         
         $style_attribute = !empty($wrapper_styles) ? ' style="' . esc_attr(implode('; ', $wrapper_styles)) . '"' : '';
@@ -80,6 +81,9 @@ class WPU_Uploader {
             <p class="wedding-photo-uploader-description"><?php echo esc_html($attributes['description'] ?? __('Please upload your wedding photos and videos here. They will be reviewed before being added to the gallery.', 'wedding-photo-uploader')); ?></p>
             
             <form id="wedding-photo-form" class="wpu-form" enctype="multipart/form-data">
+                <noscript>
+                    <p class="wpu-noscript"><?php esc_html_e('JavaScript is required to upload files. Please enable it in your browser and reload the page.', 'wedding-photo-uploader'); ?></p>
+                </noscript>
                 <div class="form-group">
                     <label for="uploader_name"><?php esc_html_e('Your Name *', 'wedding-photo-uploader'); ?></label>
                     <input type="text" id="uploader_name" name="uploader_name" required>
@@ -89,7 +93,7 @@ class WPU_Uploader {
                     <label for="photo_upload"><?php esc_html_e('Select Photos & Videos *', 'wedding-photo-uploader'); ?></label>
                     <div class="drag-drop-area">
                         <div class="drag-drop-message">
-                            <i class="dashicons dashicons-upload"></i>
+                            <i class="dashicons dashicons-upload" aria-hidden="true"></i>
                             <p><?php esc_html_e('Drag & drop photos and videos here or click to select', 'wedding-photo-uploader'); ?></p>
                             <p class="small"><?php 
                                 $accepted_formats = $settings['allowed_types'] ?? array('jpg', 'jpeg', 'png');
@@ -117,7 +121,7 @@ class WPU_Uploader {
                     </button>
                 </div>
                 
-                <div id="upload-messages" class="wpu-status-message"></div>
+                <div id="upload-messages" class="wpu-status-message" role="status" aria-live="polite"></div>
             </form>
         </div>
         <?php
@@ -521,6 +525,16 @@ class WPU_Uploader {
         return isset($settings['allowed_types']) ? $settings['allowed_types'] : array('jpg', 'jpeg', 'png');
     }
     
+    /**
+     * Append a 'px' unit to a bare numeric value, leaving values that already
+     * carry a CSS unit (e.g. '20px', '1.5rem') untouched. Prevents the
+     * '20pxpx' double-unit bug from block attribute defaults that include units.
+     */
+    private function add_css_unit($value) {
+        $value = trim((string) $value);
+        return is_numeric($value) ? $value . 'px' : $value;
+    }
+
     /**
      * Generate accept attribute for file input
      */

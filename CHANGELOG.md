@@ -1,6 +1,45 @@
 # Wedding Photo Uploader - Changelog
 
-## Version 1.1.7 (Current)
+## Version 1.1.8 (Current)
+**Release Date:** 2026-06-17
+**Maintenance & Cleanup Release**
+
+Housekeeping pass after the 1.1.7 security release: removed dead code, fixed a
+couple of real rendering/correctness bugs, and improved accessibility. No change
+to the normal upload/moderation flow — safe drop-in update.
+
+### 🧹 Cleanup / dead code
+- Deleted the unused legacy `includes/frontend-form.php`, the stale
+  `assets/js/admin.js` (enqueued on admin but targeting front-end selectors), and
+  unused helpers (`WPU_i18n::get_js_translations()`, `wpu_check_heif_support()`).
+- Removed the dead query in `render_admin_page()` and two phantom
+  `delete_transient()` calls in `uninstall.php`.
+- Removed the superseded `src/gallery/` dev scaffold from the working tree.
+
+### 🐛 Fixes
+- **Block styling:** fixed a double CSS-unit bug (`padding: 20pxpx`) so the
+  uploader block's padding/border-radius render correctly.
+- **Dates:** gallery upload dates now use `date_i18n()` (site timezone + locale).
+- **Gallery video:** removed `controls="false"` (a boolean attribute that actually
+  *enabled* native controls) and a leftover `console.log`.
+- **Queries:** dropped an unused `wp_posts` JOIN from the gallery and admin queries.
+
+### ♿ Accessibility
+- Upload status region announced to screen readers (`role="status"`, `aria-live`).
+- Decorative icons marked `aria-hidden`; attribution/play overlays now reveal on
+  keyboard focus and touch devices (not hover-only).
+- Added a `<noscript>` notice to the upload form.
+
+### 🧰 Housekeeping
+- Replaced the placeholder `Plugin URI` with the GitHub repository URL.
+
+> Not addressed here (tracked for a future release): the "email notifications"
+> feature is still advertised but not implemented, and the front-end size limit is
+> still hardcoded rather than reading the configured per-type limits.
+
+---
+
+## Version 1.1.7
 **Release Date:** 2026-06-17
 **Security & WordPress.org Compliance Release**
 

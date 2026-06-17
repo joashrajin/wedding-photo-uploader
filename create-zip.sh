@@ -36,7 +36,8 @@ npm run build
 # Only ship runtime files — dev tooling, sources outside blocks/, and
 # everything we keep in archive/ are simply never copied in.
 mkdir -p "${PLUGIN_DIR}"
-cp -r assets blocks includes package.json uninstall.php "${MAIN_FILE}" "${PLUGIN_DIR}/"
+cp -r assets blocks includes package.json uninstall.php "${MAIN_FILE}" \
+    readme.txt LICENSE README.md CHANGELOG.md "${PLUGIN_DIR}/"
 
 # Zip the staged plugin. The cp list above is an allowlist, so the only thing
 # left to strip is macOS junk that can appear inside the copied folders.

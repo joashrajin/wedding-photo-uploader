@@ -3,7 +3,7 @@
 A WordPress plugin that lets wedding guests upload their own photos and videos,
 which the host moderates before they appear in a filterable, responsive gallery.
 
-- **Version:** 1.1.7
+- **Version:** 1.1.8
 - **Requires WordPress:** 5.8 or higher
 - **Requires PHP:** 7.4 or higher
 - **License:** [GPL-2.0-or-later](LICENSE)

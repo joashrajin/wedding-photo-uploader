@@ -409,7 +409,8 @@ input[type="file"] {
     height: 24px;
 }
 
-.video-item:hover .video-overlay {
+.video-item:hover .video-overlay,
+.video-item:focus-within .video-overlay {
     opacity: 1;
 }
 
@@ -494,8 +495,17 @@ input[type="file"] {
     transition: opacity 0.3s ease;
 }
 
-.gallery-item:hover .item-meta {
+.gallery-item:hover .item-meta,
+.gallery-item:focus-within .item-meta {
     opacity: 1;
+}
+
+/* Touch devices have no hover: keep attribution and the play cue visible. */
+@media (hover: none) {
+    .item-meta,
+    .video-overlay {
+        opacity: 1;
+    }
 }
 
 .item-meta .uploader-name {

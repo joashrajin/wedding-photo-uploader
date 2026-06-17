@@ -84,7 +84,6 @@ class WPU_Loader {
         // Initialize admin
         $plugin_admin = new WPU_Admin('wedding-photo-uploader', WPU_VERSION);
         $this->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-        $this->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         $this->add_action('admin_menu', $plugin_admin, 'add_admin_menu');
         $this->add_action('admin_init', $plugin_admin, 'register_settings');
 
