@@ -3,7 +3,7 @@
 A WordPress plugin that lets wedding guests upload their own photos and videos,
 which the host moderates before they appear in a filterable, responsive gallery.
 
-- **Version:** 1.1.8
+- **Version:** 1.2.0
 - **Requires WordPress:** 5.8 or higher
 - **Requires PHP:** 7.4 or higher
 - **License:** [GPL-2.0-or-later](LICENSE)
@@ -17,7 +17,7 @@ which the host moderates before they appear in a filterable, responsive gallery.
 - Admin moderation queue for both photos and videos (approve / reject)
 - Gallery display with filtering (photos / videos / both) and sorting (date / name / filename)
 - Lightbox display for photos
-- Email notifications for approved content
+- Email notification to the site admin when new media is uploaded for review
 - Mobile-responsive design
 
 ## Blocks

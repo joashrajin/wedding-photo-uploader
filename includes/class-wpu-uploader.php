@@ -344,6 +344,14 @@ class WPU_Uploader {
                 throw new Exception('No files were uploaded successfully.');
             }
 
+            // Let the site admin know new media is awaiting moderation. Best-effort
+            // and debounced; a mail failure must never fail the upload response.
+            try {
+                $this->maybe_send_upload_notification();
+            } catch (Throwable $mail_error) {
+                // ignore — notification is non-critical
+            }
+
             // Clear output buffer before sending JSON
             ob_clean();
 
@@ -429,6 +437,59 @@ class WPU_Uploader {
         }
         $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
         return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
+    }
+
+    /**
+     * Send the site admin a (debounced) notification that new media has been
+     * uploaded and is awaiting moderation. The upload form does not collect guest
+     * emails, so the recipient is the configured notification_email (falling back
+     * to the site admin email). A short global throttle keeps a burst of
+     * single-file uploads — or abuse of the public endpoint — from flooding the
+     * inbox. Disable by returning an empty recipient via 'wpu_notification_recipient'.
+     */
+    private function maybe_send_upload_notification() {
+        $settings = get_option('wpu_settings', array());
+        $to = (is_array($settings) && !empty($settings['notification_email']))
+            ? sanitize_email($settings['notification_email'])
+            : get_option('admin_email');
+        $to = apply_filters('wpu_notification_recipient', $to);
+        if (empty($to) || !is_email($to)) {
+            return;
+        }
+
+        // Global debounce: many uploads in a short span send at most one email.
+        $window = (int) apply_filters('wpu_notification_throttle', 15 * MINUTE_IN_SECONDS);
+        if ($window > 0) {
+            if (get_transient('wpu_upload_notified')) {
+                return;
+            }
+            set_transient('wpu_upload_notified', 1, $window);
+        }
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wedding_photos';
+        $pending = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE status = %s",
+            'pending'
+        ));
+
+        $site_name    = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
+        $moderate_url = admin_url('admin.php?page=wedding-photo-uploader');
+
+        /* translators: %s: site name */
+        $subject = sprintf(__('[%s] New wedding media awaiting review', 'wedding-photo-uploader'), $site_name);
+        /* translators: 1: number of items awaiting review, 2: admin moderation URL */
+        $message = sprintf(
+            __("New wedding media has been uploaded and is waiting for your approval.\n\nItems currently awaiting review: %1\$d\n\nReview them here:\n%2\$s", 'wedding-photo-uploader'),
+            $pending,
+            $moderate_url
+        );
+
+        wp_mail(
+            $to,
+            apply_filters('wpu_notification_subject', $subject),
+            apply_filters('wpu_notification_message', $message, $pending)
+        );
     }
 
     /**

@@ -3,7 +3,7 @@
  * Plugin Name: Wedding Photo Uploader
  * Plugin URI: https://github.com/joashrajin/wedding-photo-uploader
  * Description: A WordPress plugin that allows wedding guests to upload their photos and videos. Features include photo/video moderation, gallery display with filtering, and email notifications.
- * Version: 1.1.8
+ * Version: 1.2.0
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author: Joash Rajin
@@ -19,7 +19,7 @@
  * - Admin moderation interface for both photos and videos
  * - Gallery filtering options (photos, videos, or both)
  * - Gallery sorting options (date, name, filename)
- * - Email notifications for approved content
+ * - Email notification to the site admin when new media is uploaded for review
  * - Lightbox gallery display for photos
  * - Mobile-responsive design
  * - HEIF/HEIC support
@@ -32,7 +32,7 @@ if (!defined('WPINC')) {
 }
 
 // Plugin version
-define('WPU_VERSION', '1.1.8');
+define('WPU_VERSION', '1.2.0');
 
 // Plugin directory path and URL
 define('WPU_PLUGIN_DIR', plugin_dir_path(__FILE__));

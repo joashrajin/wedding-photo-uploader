@@ -4,7 +4,7 @@ Tags: wedding, photo, upload, gallery, video
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.1.8
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,7 @@ Features:
 * Admin moderation queue for photos and videos (approve / reject)
 * Gallery with filtering (photos / videos / both) and sorting (date / name / filename)
 * Lightbox display for photos
-* Email notifications for approved content
+* Email notification to the site admin when new media is uploaded for review
 * Mobile-responsive design
 
 The plugin provides two blocks (no shortcodes are required):
@@ -58,7 +58,19 @@ approve them.
 
 No — it provides two editor blocks (Uploader and Gallery).
 
+= Will I be notified when guests upload? =
+
+Yes. The site admin (the *Notification Email* address in the plugin settings)
+receives an email when new media is uploaded for review. Notifications are batched
+so a guest uploading many files only triggers one email.
+
 == Changelog ==
+
+= 1.2.0 =
+* New: email notification to the site admin when guests upload new media for
+  review (uses the Notification Email setting), debounced to avoid inbox flooding,
+  with filters to customize or disable it.
+* Docs: corrected the email-notification description.
 
 = 1.1.8 =
 * Maintenance & housekeeping release.
@@ -105,6 +117,9 @@ No — it provides two editor blocks (Uploader and Gallery).
   gallery display, email notifications, and upload progress tracking.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Adds email notifications to the site admin when new media is uploaded. Safe drop-in update.
 
 = 1.1.8 =
 Maintenance release: cleanup, a rendering fix, and accessibility improvements. Safe drop-in update.

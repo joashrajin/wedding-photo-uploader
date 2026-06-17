@@ -1,6 +1,31 @@
 # Wedding Photo Uploader - Changelog
 
-## Version 1.1.8 (Current)
+## Version 1.2.0 (Current)
+**Release Date:** 2026-06-17
+**Feature: Email Notifications**
+
+Implements the email-notification feature that earlier versions advertised but
+never actually sent.
+
+### ✨ New
+- **Upload notifications:** when a guest uploads new media, the plugin now emails
+  the site admin (the *Notification Email* setting, defaulting to the site admin
+  address) so they know there's content awaiting moderation — including a count of
+  pending items and a link to the moderation screen.
+- Notifications are **debounced** (one email per 15 minutes by default) so a guest
+  uploading many files — or abuse of the public endpoint — cannot flood the inbox.
+- New filters for customization: `wpu_notification_recipient` (return empty to
+  disable), `wpu_notification_throttle`, `wpu_notification_subject`,
+  `wpu_notification_message`.
+
+### 📝 Docs
+- Corrected the feature wording: the notification goes to the **site admin on new
+  upload for review** (the form does not collect guest emails), not "for approved
+  content."
+
+---
+
+## Version 1.1.8
 **Release Date:** 2026-06-17
 **Maintenance & Cleanup Release**
 
