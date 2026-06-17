@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "wedding-photo-uploader/gallery",
+  "version": "1.0.0",
+  "title": "Wedding Media Gallery",
+  "category": "media",
+  "icon": "format-gallery",
+  "description": "Display approved wedding photos and videos in a beautiful gallery layout",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "attributes": {
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "gutter": {
+      "type": "number",
+      "default": 20
+    },
+    "imageSize": {
+      "type": "string",
+      "default": "medium"
+    },
+    "showUploaderInfo": {
+      "type": "boolean",
+      "default": true
+    },
+    "backgroundColor": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "textColor": {
+      "type": "string",
+      "default": "#333333"
+    },
+    "fontSize": {
+      "type": "number",
+      "default": 16
+    },
+    "borderRadius": {
+      "type": "number",
+      "default": 8
+    },
+    "padding": {
+      "type": "object",
+      "default": {
+        "top": 20,
+        "right": 20,
+        "bottom": 20,
+        "left": 20
+      }
+    }
+  },
+  "textdomain": "wedding-photo-uploader",
+  "editorScript": "file:./build/index.js",
+  "editorStyle": "file:./build/index.css",
+  "style": "file:./build/style-index.css"
+} 

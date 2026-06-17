@@ -1,0 +1,32 @@
+# Dependencies (never commit — ~1.5GB, regenerated via `npm install`)
+node_modules/
+
+# OS / editor junk
+.DS_Store
+*.log
+*.swp
+*.swo
+*.bak
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Packaging output (publish releases via GitHub Releases, not the repo)
+*.zip
+*.tar.gz
+
+# Local-only: internal archive of old docs & migration scripts (not part of the plugin)
+/archive/
+
+# Local-only: unshipped block dev scaffolding (superseded by blocks/gallery/)
+/src/
+
+# WordPress runtime (never relevant in a plugin repo)
+wp-config.php
+wp-content/
+
+# NOTE: the plugin's own JavaScript, SCSS, CSS, and blocks/*/build output ARE
+# committed — they are part of the shipped plugin. Do not re-add blanket
+# *.js / *.scss / build/ ignores here.
