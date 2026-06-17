@@ -6,6 +6,12 @@ jQuery(document).ready(function($) {
     const dragDropArea = $('.drag-drop-area');
     const dragDropMessage = $('.drag-drop-message');
 
+    // Escape a string for safe insertion into HTML (prevents DOM-based XSS from
+    // attacker-controlled values such as File.name).
+    function escapeHtml(str) {
+        return $('<div>').text(str == null ? '' : String(str)).html();
+    }
+
     // Handle drag and drop
     dragDropArea.on('dragenter dragover', function(e) {
         e.preventDefault();
@@ -40,10 +46,11 @@ jQuery(document).ready(function($) {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const fileSize = formatFileSize(file.size);
+            // Escape file.name — it is user-controlled and injected into HTML below.
             fileList += `
                 <div class="selected-file">
-                    <span class="file-name">${file.name}</span>
-                    <span class="file-size">${fileSize}</span>
+                    <span class="file-name">${escapeHtml(file.name)}</span>
+                    <span class="file-size">${escapeHtml(fileSize)}</span>
                 </div>
             `;
         }
@@ -194,8 +201,9 @@ jQuery(document).ready(function($) {
         // Check file sizes
         for (let i = 0; i < files.length; i++) {
             if (files[i].size > 200 * 1024 * 1024) { // 200MB limit
+                // escapeHtml: file name is user-controlled and showMessage() inserts via .html().
                 showMessage(
-                    `File "${files[i].name}" is too large. Maximum size is 200MB.`,
+                    `File "${escapeHtml(files[i].name)}" is too large. Maximum size is 200MB.`,
                     'error'
                 );
                 return;

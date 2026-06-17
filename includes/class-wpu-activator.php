@@ -47,7 +47,6 @@ class WPU_Activator {
                 'max_file_size' => 200, // MB
                 'max_files' => 200,
                 'allowed_types' => array('jpg', 'jpeg', 'png', 'heif', 'heic', 'mp4', 'mov', 'avi', 'mkv', 'webm'),
-                'auto_approve' => false,
                 'notification_email' => get_option('admin_email'),
                 'upload_path' => 'wedding-photos',
                 'gallery_columns' => 3,
@@ -73,9 +72,27 @@ class WPU_Activator {
             wp_mkdir_p($wpu_upload_dir);
         }
         
-        // Add .htaccess protection to upload directory
-        $htaccess_content = "Options -Indexes\n";
+        // Harden the upload directory: disable directory listing AND block
+        // execution of any script file that might be uploaded. (.htaccess only
+        // applies on Apache; on nginx/IIS apply equivalent rules at the server
+        // level.)
+        $htaccess_content  = "Options -Indexes\n";
+        $htaccess_content .= "<FilesMatch \"\\.(?i:php|php3|php4|php5|php7|phtml|pht|phar|cgi|pl|asp|aspx|sh)$\">\n";
+        $htaccess_content .= "    <IfModule mod_authz_core.c>\n";
+        $htaccess_content .= "        Require all denied\n";
+        $htaccess_content .= "    </IfModule>\n";
+        $htaccess_content .= "    <IfModule !mod_authz_core.c>\n";
+        $htaccess_content .= "        Order allow,deny\n";
+        $htaccess_content .= "        Deny from all\n";
+        $htaccess_content .= "    </IfModule>\n";
+        $htaccess_content .= "</FilesMatch>\n";
         file_put_contents($wpu_upload_dir . '/.htaccess', $htaccess_content);
+
+        // Belt-and-braces guard against directory browsing where .htaccess is
+        // ignored (e.g. nginx).
+        if (!file_exists($wpu_upload_dir . '/index.php')) {
+            file_put_contents($wpu_upload_dir . '/index.php', "<?php\n// Silence is golden.\n");
+        }
         
         // Flush rewrite rules
         flush_rewrite_rules();

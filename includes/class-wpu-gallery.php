@@ -89,18 +89,19 @@ class WPU_Gallery {
             return;
         }
 
-        // SimpleLightbox CSS
+        // SimpleLightbox CSS (bundled locally — WordPress.org requires assets served
+        // from the plugin, not a third-party CDN).
         wp_enqueue_style(
             'simplelightbox',
-            'https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.css',
+            WPU_PLUGIN_URL . 'assets/css/simple-lightbox.min.css',
             array(),
             '2.14.2'
         );
 
-        // SimpleLightbox JS
+        // SimpleLightbox JS (bundled locally).
         wp_enqueue_script(
             'simplelightbox',
-            'https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.js',
+            WPU_PLUGIN_URL . 'assets/js/simple-lightbox.min.js',
             array('jquery'),
             '2.14.2',
             true

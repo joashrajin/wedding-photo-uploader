@@ -138,9 +138,13 @@ class WPU_Uploader {
             }
             
             // Verify nonce
-            if (!isset($_POST['wpu_nonce']) || !wp_verify_nonce($_POST['wpu_nonce'], 'wpu_upload_nonce')) {
+            if (!isset($_POST['wpu_nonce']) || !wp_verify_nonce(sanitize_key($_POST['wpu_nonce']), 'wpu_upload_nonce')) {
                 throw new Exception('Security check failed. Please try again.');
             }
+
+            // This endpoint is reachable by anonymous visitors (wp_ajax_nopriv).
+            // Throttle per client to prevent resource-exhaustion abuse.
+            $this->enforce_rate_limit();
 
             // Validate required fields
             if (empty($_POST['uploader_name'])) {
@@ -152,9 +156,14 @@ class WPU_Uploader {
                 throw new Exception('Please select at least one file to upload.');
             }
 
-            $uploader_name = sanitize_text_field($_POST['uploader_name']);
+            $uploader_name = sanitize_text_field(wp_unslash($_POST['uploader_name']));
             $uploaded_files = array();
             $errors = array();
+
+            // Enforce the per-uploader file quota (wpu_settings['max_files']).
+            if (function_exists('wpu_check_uploader_limit') && !wpu_check_uploader_limit($uploader_name)) {
+                throw new Exception('Upload limit reached for this name. Please contact the site owner.');
+            }
 
             // Get plugin settings with error handling
             $settings = get_option('wpu_settings', array());
@@ -186,6 +195,13 @@ class WPU_Uploader {
                     'error' => $_FILES['photo_upload']['error'],
                     'size' => $_FILES['photo_upload']['size']
                 );
+            }
+
+            // Cap the number of files accepted per request. The front-end uploads
+            // one file per request, so this only bounds abusive bulk requests.
+            $max_per_request = (int) apply_filters('wpu_max_files_per_request', 25);
+            if (count($files_to_process) > $max_per_request) {
+                throw new Exception(sprintf('Too many files in one request. Please upload at most %d at a time.', $max_per_request));
             }
 
             // Process each file
@@ -357,6 +373,58 @@ class WPU_Uploader {
         if (ob_get_level()) {
             ob_end_clean();
         }
+    }
+
+    /**
+     * Per-IP rate limit for the anonymous upload endpoint.
+     *
+     * Uses a short rolling window stored in a transient. The default ceiling is
+     * generous enough for a wedding's worth of guests sharing one connection,
+     * while still bounding automated flooding. Tune via the 'wpu_upload_rate_limit'
+     * filter (max requests per minute per IP).
+     *
+     * @throws Exception when the limit is exceeded.
+     */
+    private function enforce_rate_limit() {
+        $ip = $this->get_client_ip();
+        if (empty($ip)) {
+            return; // Cannot identify the client; skip rather than block everyone.
+        }
+
+        $max_per_minute = (int) apply_filters('wpu_upload_rate_limit', 200);
+        if ($max_per_minute < 1) {
+            return; // Rate limiting disabled via filter.
+        }
+
+        // Fixed per-minute window: bucket the transient key by the current minute
+        // so the count genuinely resets each minute. (Re-using a single key and
+        // re-setting its TTL on every request would extend the window forever,
+        // turning the limit into a per-session cap that could block a guest
+        // uploading a large batch.) The default ceiling is generous enough for a
+        // reception's worth of guests sharing one connection.
+        $bucket = (int) floor(time() / MINUTE_IN_SECONDS);
+        $key    = 'wpu_upload_rl_' . md5($ip) . '_' . $bucket;
+        $count  = (int) get_transient($key);
+
+        if ($count >= $max_per_minute) {
+            throw new Exception('Too many uploads from your connection. Please wait a moment and try again.');
+        }
+
+        set_transient($key, $count + 1, 2 * MINUTE_IN_SECONDS);
+    }
+
+    /**
+     * Best-effort client IP for rate limiting. Validates the address and does
+     * not trust proxy headers (which are spoofable).
+     *
+     * @return string Validated IP address, or '' if unavailable.
+     */
+    private function get_client_ip() {
+        if (empty($_SERVER['REMOTE_ADDR'])) {
+            return '';
+        }
+        $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
+        return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '';
     }
 
     /**

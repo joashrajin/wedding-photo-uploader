@@ -3,7 +3,7 @@
  * Plugin Name: Wedding Photo Uploader
  * Plugin URI: https://example.com/wedding-photo-uploader
  * Description: A WordPress plugin that allows wedding guests to upload their photos and videos. Features include photo/video moderation, gallery display with filtering, and email notifications.
- * Version: 1.1.6
+ * Version: 1.1.7
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author: Joash Rajin
@@ -32,7 +32,7 @@ if (!defined('WPINC')) {
 }
 
 // Plugin version
-define('WPU_VERSION', '1.1.6');
+define('WPU_VERSION', '1.1.7');
 
 // Plugin directory path and URL
 define('WPU_PLUGIN_DIR', plugin_dir_path(__FILE__));
@@ -83,28 +83,30 @@ if (!wpu_check_requirements()) {
     return;
 }
 
-// Increase PHP limits for file uploads
-if (!function_exists('wpu_increase_upload_limits')) {
-function wpu_increase_upload_limits() {
-    @ini_set('upload_max_filesize', '200M');
-    @ini_set('post_max_size', '200M');
-    @ini_set('memory_limit', '512M');
-    @ini_set('max_input_time', '300');
-    @ini_set('max_execution_time', '300');
-}
-add_action('init', 'wpu_increase_upload_limits');
-}
+// Note: this plugin intentionally does NOT override server PHP limits
+// (upload_max_filesize, post_max_size, memory_limit, max_execution_time) at
+// runtime. Those are environment concerns; overriding them via ini_set() is
+// disallowed by the WordPress.org plugin guidelines (and two of the directives
+// cannot be changed at runtime anyway). Configure them at the server/host level
+// if large uploads require higher limits.
 
-// Check if uploader has reached the maximum number of photos
+// Check if an uploader has reached the maximum number of allowed files.
 if (!function_exists('wpu_check_uploader_limit')) {
     function wpu_check_uploader_limit($uploader_name) {
         global $wpdb;
+        $settings = get_option('wpu_settings', array());
+        $max_files = (is_array($settings) && isset($settings['max_files']))
+            ? absint($settings['max_files'])
+            : 200;
+        if ($max_files < 1) {
+            $max_files = 200;
+        }
         $table_name = $wpdb->prefix . 'wedding_photos';
-        $count = $wpdb->get_var($wpdb->prepare(
+        $count = (int) $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM $table_name WHERE uploader_name = %s",
             $uploader_name
         ));
-        return $count < 200;
+        return $count < $max_files;
     }
 }
 
@@ -116,12 +118,12 @@ if (!function_exists('wpu_filter_upload_size_limit')) {
     add_filter('upload_size_limit', 'wpu_filter_upload_size_limit', 20);
 }
 
-// Filter uploaded file types
+// Allow the media types this plugin supports. Merge into WordPress's existing
+// allowed types rather than replacing the whole map, so the plugin does not
+// silently disable other upload types (e.g. PDF) site-wide.
 if (!function_exists('wpu_upload_mimes')) {
 function wpu_upload_mimes($mimes) {
-    return array(
-        'jpg|jpeg|jpe' => 'image/jpeg',
-        'png'          => 'image/png',
+    $wpu_mimes = array(
         'heif|heic'    => 'image/heif',
         'mp4'          => 'video/mp4',
         'mov'          => 'video/quicktime',
@@ -129,6 +131,7 @@ function wpu_upload_mimes($mimes) {
         'mkv'          => 'video/x-matroska',
         'webm'         => 'video/webm'
     );
+    return array_merge((array) $mimes, $wpu_mimes);
 }
 add_filter('upload_mimes', 'wpu_upload_mimes', 10, 1);
 }

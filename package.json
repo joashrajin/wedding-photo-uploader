@@ -1,6 +1,6 @@
 {
   "name": "wedding-photo-uploader",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "WordPress plugin for wedding photo and video uploads with gallery display",
   "scripts": {
     "build": "npm run build:uploader && npm run build:gallery",

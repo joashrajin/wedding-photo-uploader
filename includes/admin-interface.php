@@ -24,78 +24,11 @@ if (!is_admin()) {
 global $wpdb;
 $table_name = $wpdb->prefix . 'wedding_photos';
 
-// Handle photo actions (individual actions via GET)
-if (isset($_GET['action'], $_GET['photo_id'], $_GET['_wpnonce'])) {
-    // Verify nonce
-    if (!wp_verify_nonce(sanitize_key($_GET['_wpnonce']), 'wpu_photo_action')) {
-        wp_die(esc_html__('Security check failed.', 'wedding-photo-uploader'));
-    }
-
-    // Verify user capabilities again before action
-    if (!current_user_can('manage_options')) {
-        wp_die(esc_html__('You do not have permission to perform this action.', 'wedding-photo-uploader'));
-    }
-
-    $photo_id = absint($_GET['photo_id']);
-    $action = sanitize_key($_GET['action']);
-    $current_tab = sanitize_key($_GET['tab'] ?? 'pending');
-    
-    if ($photo_id > 0) {
-        switch ($action) {
-            case 'approve':
-                $wpdb->update(
-                    $table_name,
-                    array('status' => 'approved'),
-                    array('id' => $photo_id),
-                    array('%s'),
-                    array('%d')
-                );
-                break;
-            case 'reject':
-                $wpdb->update(
-                    $table_name,
-                    array('status' => 'rejected'),
-                    array('id' => $photo_id),
-                    array('%s'),
-                    array('%d')
-                );
-                break;
-            case 'delete':
-                // Get file path before deleting
-                $photo = $wpdb->get_row($wpdb->prepare(
-                    "SELECT * FROM {$wpdb->prefix}wedding_photos WHERE id = %d",
-                    $photo_id
-                ));
-                
-                if ($photo) {
-                    // Use WordPress upload directory for better security
-                    $upload_dir = wp_upload_dir();
-                    $file_path = $upload_dir['basedir'] . '/wedding-photos/' . sanitize_file_name($photo->filename);
-                    
-                    // Verify file is within expected directory to prevent directory traversal
-                    $real_path = realpath($file_path);
-                    $expected_dir = realpath($upload_dir['basedir'] . '/wedding-photos/');
-                    
-                    if ($real_path && $expected_dir && strpos($real_path, $expected_dir) === 0) {
-                        if (file_exists($file_path) && is_file($file_path)) {
-                            wp_delete_file($file_path);
-                        }
-                    }
-                    
-                    $wpdb->delete(
-                        $table_name,
-                        array('id' => $photo_id),
-                        array('%d')
-                    );
-                }
-                break;
-        }
-        
-        // Redirect to prevent form resubmission
-        wp_safe_redirect(admin_url('admin.php?page=wedding-photo-uploader'));
-        exit;
-    }
-}
+    // Single-item approve/reject actions are handled by WPU_Admin::handle_photo_actions()
+    // (hooked on admin_init, which runs and redirects before this page renders), so the
+    // duplicate single-item handler that previously lived here was dead, shadowed code and
+    // has been removed to avoid divergent authorization logic. Delete is available via the
+    // bulk actions below.
 
 // Handle bulk actions
 if (isset($_POST['bulk_action']) && isset($_POST['bulk_nonce'])) {

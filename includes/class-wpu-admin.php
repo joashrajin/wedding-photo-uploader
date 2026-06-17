@@ -119,6 +119,15 @@ class WPU_Admin {
             'dashicons-camera',
             30
         );
+
+        add_submenu_page(
+            'wedding-photo-uploader',
+            __('Settings', 'wedding-photo-uploader'),
+            __('Settings', 'wedding-photo-uploader'),
+            'manage_options',
+            'wedding-photo-uploader-settings',
+            array($this, 'render_settings_page')
+        );
     }
 
     /**
@@ -266,9 +275,9 @@ class WPU_Admin {
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
             <form action="options.php" method="post">
                 <?php
-                settings_fields('wpu_options');
-                do_settings_sections('wpu_options');
-                submit_button('Save Settings');
+                settings_fields('wpu_settings_group');
+                do_settings_sections('wpu_settings_group');
+                submit_button(__('Save Settings', 'wedding-photo-uploader'));
                 ?>
             </form>
         </div>
@@ -278,33 +287,91 @@ class WPU_Admin {
     /**
      * Register settings for the plugin.
      *
+     * Operates on the 'wpu_settings' option — the same option the uploader reads
+     * for its size and file-count limits — so admin changes actually take effect.
+     *
      * @since    1.0.0
      */
     public function register_settings() {
-        register_setting('wpu_options', 'wpu_options');
+        register_setting('wpu_settings_group', 'wpu_settings', array(
+            'type'              => 'array',
+            'sanitize_callback' => array($this, 'sanitize_settings'),
+        ));
 
         add_settings_section(
             'wpu_main_section',
-            __('Main Settings', 'wedding-photo-uploader'),
+            __('Upload Settings', 'wedding-photo-uploader'),
             array($this, 'render_section_description'),
-            'wpu_options'
+            'wpu_settings_group'
         );
 
         add_settings_field(
             'wpu_notification_email',
             __('Notification Email', 'wedding-photo-uploader'),
             array($this, 'render_notification_email_field'),
-            'wpu_options',
+            'wpu_settings_group',
             'wpu_main_section'
         );
 
         add_settings_field(
-            'wpu_max_upload_size',
-            __('Maximum Upload Size (MB)', 'wedding-photo-uploader'),
-            array($this, 'render_max_upload_size_field'),
-            'wpu_options',
+            'wpu_max_file_size',
+            __('Maximum Photo Size (MB)', 'wedding-photo-uploader'),
+            array($this, 'render_max_file_size_field'),
+            'wpu_settings_group',
             'wpu_main_section'
         );
+
+        add_settings_field(
+            'wpu_video_max_size',
+            __('Maximum Video Size (MB)', 'wedding-photo-uploader'),
+            array($this, 'render_video_max_size_field'),
+            'wpu_settings_group',
+            'wpu_main_section'
+        );
+
+        add_settings_field(
+            'wpu_max_files',
+            __('Maximum Files Per Uploader', 'wedding-photo-uploader'),
+            array($this, 'render_max_files_field'),
+            'wpu_settings_group',
+            'wpu_main_section'
+        );
+    }
+
+    /**
+     * Sanitize and validate submitted settings, merging into the existing
+     * 'wpu_settings' option so gallery/other keys are preserved.
+     *
+     * @since    1.1.7
+     * @param    array    $input    Submitted settings.
+     * @return   array              Sanitized settings to store.
+     */
+    public function sanitize_settings($input) {
+        $existing = get_option('wpu_settings', array());
+        if (!is_array($existing)) {
+            $existing = array();
+        }
+        $out = $existing;
+
+        if (!is_array($input)) {
+            return $out;
+        }
+
+        if (isset($input['notification_email'])) {
+            $email = sanitize_email($input['notification_email']);
+            $out['notification_email'] = $email ? $email : get_option('admin_email');
+        }
+        if (isset($input['max_file_size'])) {
+            $out['max_file_size'] = max(1, min(500, absint($input['max_file_size'])));
+        }
+        if (isset($input['video_max_size'])) {
+            $out['video_max_size'] = max(1, min(2000, absint($input['video_max_size'])));
+        }
+        if (isset($input['max_files'])) {
+            $out['max_files'] = max(1, min(1000, absint($input['max_files'])));
+        }
+
+        return $out;
     }
 
     /**
@@ -313,7 +380,7 @@ class WPU_Admin {
      * @since    1.0.0
      */
     public function render_section_description() {
-        echo '<p>' . esc_html__('Configure the main settings for the Wedding Media Uploader plugin.', 'wedding-photo-uploader') . '</p>';
+        echo '<p>' . esc_html__('Configure upload limits for the Wedding Media Uploader. These limits are enforced on every upload, including anonymous guest uploads.', 'wedding-photo-uploader') . '</p>';
     }
 
     /**
@@ -322,25 +389,53 @@ class WPU_Admin {
      * @since    1.0.0
      */
     public function render_notification_email_field() {
-        $options = get_option('wpu_options');
+        $options = get_option('wpu_settings', array());
         $value = isset($options['notification_email']) ? $options['notification_email'] : get_option('admin_email');
         ?>
-        <input type="email" name="wpu_options[notification_email]" value="<?php echo esc_attr($value); ?>" class="regular-text">
-        <p class="description"><?php esc_html_e('Email address to receive notifications when new media is uploaded.', 'wedding-photo-uploader'); ?></p>
+        <input type="email" name="wpu_settings[notification_email]" value="<?php echo esc_attr($value); ?>" class="regular-text">
+        <p class="description"><?php esc_html_e('Email address associated with uploads.', 'wedding-photo-uploader'); ?></p>
         <?php
     }
 
     /**
-     * Render the maximum upload size field.
+     * Render the maximum photo size field.
      *
-     * @since    1.0.0
+     * @since    1.1.7
      */
-    public function render_max_upload_size_field() {
-        $options = get_option('wpu_options');
-        $value = isset($options['max_upload_size']) ? $options['max_upload_size'] : 200;
+    public function render_max_file_size_field() {
+        $options = get_option('wpu_settings', array());
+        $value = isset($options['max_file_size']) ? absint($options['max_file_size']) : 200;
         ?>
-        <input type="number" name="wpu_options[max_upload_size]" value="<?php echo esc_attr($value); ?>" min="1" max="500" class="small-text">
-        <p class="description"><?php esc_html_e('Maximum file size in megabytes that users can upload.', 'wedding-photo-uploader'); ?></p>
+        <input type="number" name="wpu_settings[max_file_size]" value="<?php echo esc_attr($value); ?>" min="1" max="500" class="small-text">
+        <p class="description"><?php esc_html_e('Maximum size in megabytes for an uploaded photo (1–500).', 'wedding-photo-uploader'); ?></p>
+        <?php
+    }
+
+    /**
+     * Render the maximum video size field.
+     *
+     * @since    1.1.7
+     */
+    public function render_video_max_size_field() {
+        $options = get_option('wpu_settings', array());
+        $value = isset($options['video_max_size']) ? absint($options['video_max_size']) : 500;
+        ?>
+        <input type="number" name="wpu_settings[video_max_size]" value="<?php echo esc_attr($value); ?>" min="1" max="2000" class="small-text">
+        <p class="description"><?php esc_html_e('Maximum size in megabytes for an uploaded video (1–2000).', 'wedding-photo-uploader'); ?></p>
+        <?php
+    }
+
+    /**
+     * Render the maximum files-per-uploader field.
+     *
+     * @since    1.1.7
+     */
+    public function render_max_files_field() {
+        $options = get_option('wpu_settings', array());
+        $value = isset($options['max_files']) ? absint($options['max_files']) : 200;
+        ?>
+        <input type="number" name="wpu_settings[max_files]" value="<?php echo esc_attr($value); ?>" min="1" max="1000" class="small-text">
+        <p class="description"><?php esc_html_e('Maximum number of files a single uploader name may submit (1–1000).', 'wedding-photo-uploader'); ?></p>
         <?php
     }
 } 
