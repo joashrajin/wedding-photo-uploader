@@ -697,4 +697,94 @@ input[type="file"] {
         font-size: 11px;
         padding: 10px 8px 8px;
     }
-} 
+}
+/* =====================================================================
+   Modernized Gallery & Filter Bar  (presentation only)
+   Overrides the older blue/box filter buttons with a modern segmented
+   pill control and refines gallery item corners, hover and caption.
+   No markup or JS changes — selectors match the existing rendered
+   output of WPU_Gallery::render_block().
+   ===================================================================== */
+.wedding-gallery-container {
+    margin: 24px 0;
+}
+
+.gallery-filters {
+    display: inline-flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    padding: 5px;
+    background: #f1f1f3;
+    border: none;
+    border-radius: 999px;
+}
+
+.gallery-filters .filter-btn {
+    border: none;
+    background: transparent;
+    color: #3a3a40;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gallery-filters .filter-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: transparent;
+    color: #1a1a1f;
+}
+
+.gallery-filters .filter-btn.active,
+.gallery-filters .filter-btn.active:hover {
+    background: #fff;
+    color: #1a1a1f;
+    border-color: transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* Gallery item refinements */
+.wedding-gallery .gallery-item {
+    border-radius: 10px;
+}
+
+.wedding-gallery .gallery-item:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.gallery-item .item-meta {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.78));
+    padding: 22px 12px 12px;
+}
+
+.gallery-item .item-meta .uploader-name {
+    font-weight: 600;
+}
+
+/* Friendlier empty state */
+.no-items,
+.wpu-no-photos {
+    text-align: center;
+    padding: 48px 24px;
+    background: #fafafb;
+    border: 1px solid #ececf0;
+    border-radius: 12px;
+    color: #6b6b76;
+    font-style: normal;
+}
+
+/* Keep the segmented control horizontal on small screens. */
+@media (max-width: 768px) {
+    .gallery-filters {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .gallery-filters .filter-btn {
+        width: auto;
+    }
+}
