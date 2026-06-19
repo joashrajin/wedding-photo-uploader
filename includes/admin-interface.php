@@ -690,6 +690,94 @@ if (isset($_POST['bulk_action']) && isset($_POST['bulk_nonce'])) {
 .column-cb input[type="checkbox"] {
     margin: 0;
 }
+
+/* ===== Modernized moderation UI (presentation only) ===== */
+.wrap .wp-list-table {
+    border: 1px solid #e0e0e6;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.wrap .wp-list-table thead th,
+.wrap .wp-list-table thead td {
+    background: #f6f7f7;
+    border-bottom: 1px solid #e0e0e6;
+    font-weight: 600;
+}
+
+.wrap .wp-list-table td,
+.wrap .wp-list-table th {
+    vertical-align: middle;
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.wrap .wp-list-table tbody tr:hover {
+    background: #f0f6fc;
+}
+
+/* Thumbnails / video previews */
+.wpu-thumbnail-preview img,
+.wpu-video-preview video {
+    border-radius: 6px;
+    border: 1px solid #e0e0e6;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Status as pill badges (overrides the colour-only rules above). */
+.status-pending,
+.status-approved,
+.status-rejected {
+    display: inline-block;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.7;
+}
+
+.status-pending {
+    background: #fcf3e3;
+    color: #8a6116;
+}
+
+.status-approved {
+    background: #e6f4ea;
+    color: #1a7f37;
+}
+
+.status-rejected {
+    background: #fdeaea;
+    color: #b42318;
+}
+
+/* Type column icon alignment */
+.wrap .wp-list-table .dashicons {
+    color: #646970;
+    vertical-align: text-bottom;
+}
+
+/* Bulk-actions toolbar spacing */
+.tablenav.top {
+    margin-bottom: 12px;
+}
+
+.bulkactions select {
+    border-radius: 6px;
+    min-height: 32px;
+}
+
+/* Action buttons: even spacing in the Actions column */
+.wp-list-table td .button {
+    margin-right: 6px;
+}
+
+/* Tab bar: a touch more breathing room */
+.nav-tab-wrapper {
+    margin-bottom: 24px;
+}
+
 </style>
 
 <script>
