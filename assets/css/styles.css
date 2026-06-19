@@ -266,6 +266,127 @@ input[type="file"] {
     text-align: left;
 }
 
+/* =====================================================================
+   Modernized Upload Form
+   Styles below target the markup actually rendered by
+   WPU_Uploader::render_block() (.wedding-photo-uploader / .form-group /
+   .wpu-status-message). The plugin's original rules targeted legacy class
+   names (.wpu-upload-form / .wpu-form-group / .wpu-message) that the form
+   no longer outputs, so the name field and status banners rendered
+   unstyled. This is a presentation-only fix — no markup or logic changes.
+   ===================================================================== */
+.wedding-photo-uploader {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px;
+    background: #fff;
+    border: 1px solid #e8e8ec;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.wedding-photo-uploader-title {
+    margin: 0 0 6px;
+    line-height: 1.25;
+}
+
+.wedding-photo-uploader-description {
+    margin: 0 0 24px;
+    color: #5b5b66;
+}
+
+.wedding-photo-uploader .form-group {
+    margin-bottom: 20px;
+}
+
+.wedding-photo-uploader .form-group > label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.wedding-photo-uploader .form-group input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #d6d6de;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wedding-photo-uploader .form-group input[type="text"]:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.18);
+}
+
+/* Drag & drop area refinements (additive over existing .drag-drop-area). */
+.wedding-photo-uploader .drag-drop-area {
+    border-radius: 10px;
+    border-color: #cfcfd8;
+    background: #fafafb;
+}
+
+.wedding-photo-uploader .drag-drop-area.dragging {
+    border-color: #2271b1;
+    background: #eef5fb;
+}
+
+/* Refined, theme-agnostic submit button (overrides legacy #0073aa). */
+.wedding-photo-uploader .wpu-submit-button {
+    background: #2271b1;
+    border-radius: 8px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.wedding-photo-uploader .wpu-submit-button:hover {
+    background: #185a92;
+}
+
+.wedding-photo-uploader .wpu-submit-button:active {
+    transform: translateY(1px);
+}
+
+/* Status banner — the rendered element is #upload-messages.wpu-status-message,
+   which gains .success / .error / .info at runtime. The original .wpu-message
+   rules never matched it, so these mirror that styling onto the real class. */
+.wpu-status-message {
+    margin-top: 16px;
+}
+
+.wpu-status-message.success,
+.wpu-status-message.error,
+.wpu-status-message.info {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-weight: 500;
+}
+
+.wpu-status-message.success {
+    background: #e6f4ea;
+    color: #14532d;
+    border-color: #b7e0c2;
+}
+
+.wpu-status-message.error {
+    background: #fdeaea;
+    color: #7f1d1d;
+    border-color: #f3c2c2;
+}
+
+.wpu-status-message.info {
+    background: #eaf2fb;
+    color: #0c4a6e;
+    border-color: #c2dcf3;
+    text-align: left;
+}
+
 /* Gallery Styles */
 .wedding-photo-gallery {
     display: grid;
