@@ -230,16 +230,73 @@ class WPU_Admin {
 
         settings_errors('wpu_messages');
         ?>
-        <div class="wrap">
+        <div class="wrap wpu-settings-page">
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-            <form action="options.php" method="post">
-                <?php
-                settings_fields('wpu_settings_group');
-                do_settings_sections('wpu_settings_group');
-                submit_button(__('Save Settings', 'wedding-photo-uploader'));
-                ?>
-            </form>
+            <div class="wpu-settings-card">
+                <form action="options.php" method="post">
+                    <?php
+                    settings_fields('wpu_settings_group');
+                    do_settings_sections('wpu_settings_group');
+                    submit_button(__('Save Settings', 'wedding-photo-uploader'));
+                    ?>
+                </form>
+            </div>
         </div>
+        <style>
+            /* Presentation-only polish, scoped to this settings screen. */
+            .wpu-settings-page .wpu-settings-card {
+                max-width: 760px;
+                margin-top: 16px;
+                padding: 4px 28px 20px;
+                background: #fff;
+                border: 1px solid #e0e0e6;
+                border-radius: 10px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+            .wpu-settings-page .wpu-settings-card h2 {
+                font-size: 1.1rem;
+                padding-top: 16px;
+                margin-bottom: 0;
+            }
+            .wpu-settings-page .form-table th {
+                padding: 22px 10px 22px 0;
+                font-weight: 600;
+            }
+            @media (min-width: 783px) {
+                .wpu-settings-page .form-table th {
+                    width: 240px;
+                }
+            }
+            .wpu-settings-page .form-table td {
+                padding: 16px 10px;
+            }
+            .wpu-settings-page .form-table input[type="email"],
+            .wpu-settings-page .form-table input[type="number"] {
+                border: 1px solid #d6d6de;
+                border-radius: 8px;
+                padding: 8px 12px;
+                box-shadow: none;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            }
+            .wpu-settings-page .form-table input[type="email"] {
+                width: 360px;
+                max-width: 100%;
+            }
+            .wpu-settings-page .form-table input:focus {
+                border-color: #2271b1;
+                box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.18);
+                outline: none;
+            }
+            .wpu-settings-page .form-table .description {
+                color: #646970;
+                margin-top: 6px;
+            }
+            .wpu-settings-page .submit {
+                padding-top: 4px;
+                margin-top: 8px;
+                border-top: 1px solid #f0f0f4;
+            }
+        </style>
         <?php
     }
 
