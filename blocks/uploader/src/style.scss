@@ -1,62 +1,74 @@
+/* Block-editor preview for the uploader block (class is editor-only, so these
+   rules never affect the public form). Modernized to mirror the front-end
+   card styling. */
 .wedding-photo-uploader-block-edit {
-  padding: 20px;
-  border: 1px solid #ddd;
-  background-color: #f8f8f8;
-  
+  padding: 28px;
+  border: 1px solid #e8e8ec;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+
   .wedding-photo-uploader-title {
     margin-top: 0;
   }
-  
-  .form-fields-preview {
-    margin: 20px 0;
+
+  .wedding-photo-uploader-description {
+    color: #5b5b66;
   }
-  
+
+  .form-fields-preview {
+    margin: 22px 0;
+  }
+
   .form-field-preview {
-    margin-bottom: 15px;
-    
+    margin-bottom: 16px;
+
     label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 600;
     }
-    
+
     .input-preview {
-      height: 30px;
-      background-color: #e5e5e5;
-      border-radius: 4px;
+      height: 44px;
+      background-color: #f3f4f6;
+      border: 1px solid #e2e3e8;
+      border-radius: 8px;
     }
-    
+
     .file-input-preview {
-      height: 80px;
-      background-color: #e5e5e5;
-      border-radius: 4px;
-      border: 2px dashed #ccc;
+      height: 110px;
+      background-color: #fafafb;
+      border-radius: 10px;
+      border: 2px dashed #cfcfd8;
       position: relative;
-      
+
       &:after {
         content: "Drag & drop photos here";
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        color: #666;
+        color: #6c6c78;
+        font-size: 14px;
       }
     }
   }
-  
+
   .submit-button-preview {
-    display: inline-block;
-    padding: 8px 15px;
-    background-color: #0073aa;
-    color: white;
-    border-radius: 4px;
-    font-weight: bold;
+    display: block;
+    text-align: center;
+    padding: 13px 20px;
+    background-color: #2271b1;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
   }
-  
+
   .wedding-photo-uploader-note {
-    margin-top: 20px;
-    font-style: italic;
-    color: #666;
+    margin-top: 18px;
+    font-style: normal;
+    color: #6c6c78;
     font-size: 13px;
   }
 }
@@ -64,4 +76,4 @@
 // Front-end styles (will be combined with your existing CSS)
 .wedding-photo-uploader {
   // Your existing CSS will be imported here
-} 
+}
