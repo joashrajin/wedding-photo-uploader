@@ -352,6 +352,16 @@ input[type="file"] {
     transform: translateY(1px);
 }
 
+.wedding-photo-uploader .wpu-submit-button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.wedding-photo-uploader .wpu-submit-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.45);
+}
+
 /* Status banner — the rendered element is #upload-messages.wpu-status-message,
    which gains .success / .error / .info at runtime. The original .wpu-message
    rules never matched it, so these mirror that styling onto the real class. */
@@ -465,6 +475,10 @@ input[type="file"] {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .wedding-photo-uploader {
+        padding: 20px;
+        margin: 10px;
+    }
     .wpu-upload-form {
         margin: 10px;
         padding: 15px;
