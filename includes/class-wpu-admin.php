@@ -259,9 +259,13 @@ class WPU_Admin {
                 margin-bottom: 0;
             }
             .wpu-settings-page .form-table th {
-                width: 240px;
                 padding: 22px 10px 22px 0;
                 font-weight: 600;
+            }
+            @media (min-width: 783px) {
+                .wpu-settings-page .form-table th {
+                    width: 240px;
+                }
             }
             .wpu-settings-page .form-table td {
                 padding: 16px 10px;
@@ -275,7 +279,7 @@ class WPU_Admin {
                 transition: border-color 0.15s ease, box-shadow 0.15s ease;
             }
             .wpu-settings-page .form-table input[type="email"] {
-                min-width: 360px;
+                width: 360px;
                 max-width: 100%;
             }
             .wpu-settings-page .form-table input:focus {
