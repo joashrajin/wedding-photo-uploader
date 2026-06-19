@@ -744,7 +744,7 @@ if (isset($_POST['bulk_action']) && isset($_POST['bulk_nonce'])) {
 
 .status-approved {
     background: #e6f4ea;
-    color: #1a7f37;
+    color: #15662c;
 }
 
 .status-rejected {
